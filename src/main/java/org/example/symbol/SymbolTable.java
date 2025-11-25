@@ -21,6 +21,16 @@ public class SymbolTable {
         return pos;
     }
 
+    public Symbol addTemp(String name, SymbolType type) {
+        if (indexByName.containsKey(name)) {
+            return symbols.get(indexByName.get(name));
+        }
+        Symbol symbol = new Symbol(name, symbols.size() + 1, type);
+        symbols.add(symbol);
+        indexByName.put(name, symbols.size() - 1);
+        return symbol;
+    }
+
     public Symbol getSymbol(String name) { return symbols.get(indexByName.get(name)); }
 
 

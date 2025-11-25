@@ -13,7 +13,7 @@ public class SymbolWriterUtil {
         StringBuilder sb = new StringBuilder();
         int id = 1;
         for (Symbol s : table.getAll()) {
-            sb.append(id++).append(" – ").append(s.getName()).append(s.getType() == SymbolType.FLOAT ? " [вещественный]" : " [целый]").append("\n").append("\n");
+            sb.append("<id,").append(id++).append(">").append(" – ").append(s.getName()).append(s.getType() == SymbolType.FLOAT ? ", float" : ", integer").append("\n");
         }
         Files.writeString(file, sb.toString());
     }

@@ -11,6 +11,7 @@ import org.example.symbol.SymbolTable;
 import org.example.token.Token;
 import org.example.tree.Node;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -31,7 +32,6 @@ public class Main {
             LexicalAnalyzer analyzer = new LexicalAnalyzer();
             SymbolTable symbols = new SymbolTable();
             List<Token> tokens = analyzer.analyze(input, symbols);
-
             if (mode.equals("LEX")) {
                 TokenWriterUtil.writeTokens(Path.of("tokens.txt"), tokens, symbols);
                 SymbolWriterUtil.writeSymbols(Path.of("symbols.txt"), symbols);
@@ -48,6 +48,33 @@ public class Main {
                 Node modTree = semantic.analyze(tree);
                 SyntaxTreeWriterUtil.writeSyntaxTree(Path.of("syntax_tree_mod.txt"), modTree, symbols);
                 System.out.println("Семантический анализ успешно завершён!");
+            } else if (mode.equals("GEN1")) {
+                Parser parser = new Parser(tokens, symbols);
+                Node tree = parser.parse();
+                SemanticAnalyzer semantic = new SemanticAnalyzer();
+                Node modTree = semantic.analyze(tree);
+
+                ThreeAddressCodeGenerator generator = new ThreeAddressCodeGenerator(symbols);
+                List<String> code = generator.generate(modTree);
+
+                Files.write(Path.of("portable_code.txt"), code);
+                SymbolWriterUtil.writeSymbols(Path.of("symbols.txt"), symbols);
+
+                System.out.println("Трехадресный код успешно сгенерирован!");
+            }
+            else if (mode.equals("GEN2")) {
+                Parser parser = new Parser(tokens, symbols);
+                Node tree = parser.parse();
+                SemanticAnalyzer semantic = new SemanticAnalyzer();
+                Node modTree = semantic.analyze(tree);
+
+                PostfixGenerator generator = new PostfixGenerator();
+                List<String> postfix = generator.generate(modTree);
+
+                Files.writeString(Path.of("postfix.txt"), String.join(" ", postfix));
+                SymbolWriterUtil.writeSymbols(Path.of("symbols.txt"), symbols);
+
+                System.out.println("Постфиксная нотация успешно сгенерирована!");
             } else {
                 System.err.println("Неверный режим: " + mode + " (должно быть LEX или SYN)");
             }
